@@ -8,13 +8,13 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
     :root {
-        --bg: #050505;
-        --text: #ededed;
-        --text-dim: #888;
-        --accent: #8b5cf6;
-        --accent-dim: rgba(139, 92, 246, 0.1);
+        --bg: #030303;
+        --text: #ffffff;
+        --text-dim: #9ca3af;
+        --accent: #7c3aed;
+        --accent-hover: #6d28d9;
         --card-bg: rgba(255, 255, 255, 0.03);
-        --border: rgba(255, 255, 255, 0.08);
+        --border: rgba(255, 255, 255, 0.06);
     }
 
     body {
@@ -29,211 +29,277 @@
         overflow-x: hidden;
     }
 
-    .background-glow {
-        position: fixed;
-        width: 100vw;
-        height: 100vh;
-        z-index: -1;
-        background: radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.08), transparent 60%);
-        animation: pulseGlow 8s ease-in-out infinite alternate;
-    }
-
-    .noise {
+    #canvas-bg {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        pointer-events: none;
         z-index: -1;
-        opacity: 0.03;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        filter: blur(100px);
+        opacity: 0.6;
     }
 
-    .container {
+    .wrapper {
         width: 100%;
-        max-width: 600px;
-        padding: 100px 24px;
+        max-width: 580px;
+        padding: 120px 24px;
+        z-index: 10;
         display: flex;
         flex-direction: column;
         align-items: center;
     }
 
     .avatar {
-        width: 100px;
-        height: 100px;
+        width: 110px;
+        height: 110px;
         border-radius: 50%;
         margin-bottom: 24px;
-        box-shadow: 0 0 40px rgba(139, 92, 246, 0.2);
         object-fit: cover;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 0 40px rgba(124, 58, 237, 0.25);
+        border: 2px solid rgba(255, 255, 255, 0.08);
     }
 
     h1 {
-        font-size: 1.8rem;
+        font-size: 2rem;
         font-weight: 600;
         margin: 0 0 40px 0;
-        letter-spacing: -0.02em;
+        letter-spacing: -0.025em;
     }
 
-    nav {
+    .nav {
         display: flex;
-        gap: 24px;
+        gap: 32px;
         margin-bottom: 60px;
-        width: 100%;
-        justify-content: center;
         border-bottom: 1px solid var(--border);
         padding-bottom: 16px;
+        width: 100%;
+        justify-content: center;
     }
 
-    .nav-link {
+    .nav-item {
         color: var(--text-dim);
         cursor: pointer;
-        font-size: 0.9rem;
+        font-size: 0.95rem;
         transition: color 0.2s;
-        padding: 4px 8px;
+        padding: 4px 0;
     }
 
-    .nav-link:hover, .nav-link.active {
+    .nav-item:hover, .nav-item.active {
         color: var(--text);
     }
 
-    .content-section {
+    .section {
         display: none;
         width: 100%;
-        animation: fadeIn 0.3s ease forwards;
+        animation: fadeUp 0.4s ease forwards;
     }
 
-    .content-section.active {
+    .section.active {
         display: block;
     }
 
     p {
-        line-height: 1.6;
-        color: #a1a1a1;
-        font-size: 1rem;
+        line-height: 1.65;
+        color: #d1d5db;
+        font-size: 1.05rem;
         margin-bottom: 24px;
     }
 
     .card {
         background: var(--card-bg);
         border: 1px solid var(--border);
-        padding: 24px;
-        border-radius: 12px;
+        padding: 28px;
+        border-radius: 16px;
         transition: transform 0.2s, border-color 0.2s;
+        backdrop-filter: blur(10px);
     }
 
     .card:hover {
+        border-color: rgba(124, 58, 237, 0.4);
         transform: translateY(-2px);
-        border-color: rgba(139, 92, 246, 0.3);
     }
 
-    .card-header {
+    .card-top {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 12px;
+        margin-bottom: 16px;
     }
 
     .card-title {
-        color: #fff;
-        font-weight: 500;
-        font-size: 1.1rem;
+        font-size: 1.25rem;
+        font-weight: 600;
     }
 
-    .tag {
+    .badge {
         font-size: 0.75rem;
-        background: var(--accent-dim);
-        color: var(--accent);
-        padding: 4px 8px;
-        border-radius: 6px;
+        background: rgba(124, 58, 237, 0.15);
+        color: #a78bfa;
+        padding: 4px 10px;
+        border-radius: 999px;
         font-family: monospace;
     }
 
-    .btn-discord {
+    .action-btn {
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        background: #5865F2;
-        color: #fff;
+        background: var(--text);
+        color: var(--bg);
         text-decoration: none;
         padding: 10px 20px;
         border-radius: 8px;
         font-size: 0.9rem;
-        font-weight: 500;
-        margin-top: 10px;
-        transition: opacity 0.2s;
+        font-weight: 600;
+        margin-top: 20px;
+        transition: transform 0.1s;
     }
 
-    .btn-discord:hover {
-        opacity: 0.9;
+    .action-btn:hover {
+        transform: scale(1.02);
     }
 
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(5px); }
+    .action-btn.secondary {
+        background: transparent;
+        color: var(--text);
+        border: 1px solid var(--border);
+        margin-left: 10px;
+    }
+
+    .action-btn.secondary:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(10px); }
         to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes pulseGlow {
-        0% { opacity: 0.6; transform: scale(1); }
-        100% { opacity: 1; transform: scale(1.1); }
     }
 </style>
 </head>
 <body>
 
-    <div class="background-glow"></div>
-    <div class="noise"></div>
+    <canvas id="canvas-bg"></canvas>
 
-    <div class="container">
-        <img src="https://i.imgur.com/6Uo3OUo.gif" alt="Aleksandre" class="avatar">
+    <div class="wrapper">
+        <img src="https://i.imgur.com/6Uo3OUo.gif" alt="Profile" class="avatar">
         <h1>Aleksandre</h1>
 
-        <nav>
-            <div class="nav-link active" onclick="switchTab('home', this)">Home</div>
-            <div class="nav-link" onclick="switchTab('work', this)">Projects</div>
-            <div class="nav-link" onclick="switchTab('contact', this)">Contact</div>
-        </nav>
+        <div class="nav">
+            <div class="nav-item active" onclick="switchTab('home', this)">Home</div>
+            <div class="nav-item" onclick="switchTab('projects', this)">Projects</div>
+            <div class="nav-item" onclick="switchTab('contact', this)">Contact</div>
+        </div>
 
-        <div id="home" class="content-section active">
+        <div id="home" class="section active">
             <p>
-                I'm a developer who spends way too much time reverse engineering World of Warcraft.
+                I'm a developer obsessed with the internal workings of World of Warcraft.
             </p>
             <p>
-                I mostly work on memory editing and kernel drivers. I like figuring out how the game client works internally and building tools that stay invisible. My main goal is keeping things safe and simple—no bloat, just code that works and doesn't get you banned.
+                My work focuses on client reverse engineering, kernel-level memory management, and safety. I don't like overcomplicating things; I build tools that are invisible, efficient, and reliable. If it's not secure, I don't ship it.
             </p>
         </div>
 
-        <div id="work" class="content-section">
+        <div id="projects" class="section">
             <div class="card">
-                <div class="card-header">
+                <div class="card-top">
                     <span class="card-title">Blackhand</span>
-                    <span class="tag">Unlocker</span>
+                    <span class="badge">Kernel Driver</span>
                 </div>
-                <p style="margin-bottom: 0;">
-                    This is my private unlocker. It's built with a custom kernel driver to handle read operations, making it extremely secure and virtually impossible to detect. It fully supports Midnight and is designed for stability.
+                <p style="margin-bottom: 0; font-size: 0.95rem; color: #9ca3af;">
+                    A private WoW unlocker utilizing a custom kernel driver for secure read/write operations. It's built for stability, fully supports Midnight, and is engineered to remain undetected.
                 </p>
+                <div style="margin-top: 24px;">
+                    <a href="https://blackhand.app/" target="_blank" class="action-btn">
+                        Visit Website <i class="fas fa-arrow-right" style="font-size: 0.8em;"></i>
+                    </a>
+                </div>
             </div>
         </div>
 
-        <div id="contact" class="content-section">
+        <div id="contact" class="section">
             <p>
-                If you want to talk about Blackhand or just ask some questions, hit me up on Discord.
+                Whether you have questions about Blackhand or just want to discuss game internals, I'm usually around.
             </p>
-            <a href="https://discord.com/users/aleksandre_main" target="_blank" class="btn-discord">
+            <a href="https://discord.com/users/aleksandre_main" target="_blank" class="action-btn" style="background: #5865F2; color: #fff;">
                 <i class="fab fa-discord"></i> aleksandre_main
             </a>
         </div>
     </div>
 
     <script>
-        function switchTab(id, el) {
-            const tabs = document.querySelectorAll('.content-section');
-            tabs.forEach(tab => tab.classList.remove('active'));
-            
-            const links = document.querySelectorAll('.nav-link');
-            links.forEach(link => link.classList.remove('active'));
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let orbs = [];
 
+        function init() {
+            resize();
+            createOrbs();
+            loop();
+        }
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resize);
+
+        class Orb {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.size = Math.random() * 200 + 150;
+                this.vx = (Math.random() - 0.5) * 1.5;
+                this.vy = (Math.random() - 0.5) * 1.5;
+                
+                const colors = ['#4c1d95', '#5b21b6', '#7c3aed', '#2e1065'];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < -this.size || this.x > width + this.size) this.vx *= -1;
+                if (this.y < -this.size || this.y > height + this.size) this.vy *= -1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+        }
+
+        function createOrbs() {
+            orbs = [];
+            for(let i = 0; i < 6; i++) {
+                orbs.push(new Orb());
+            }
+        }
+
+        function loop() {
+            ctx.clearRect(0, 0, width, height);
+            
+            ctx.globalCompositeOperation = 'screen';
+            orbs.forEach(orb => {
+                orb.update();
+                orb.draw();
+            });
+            
+            requestAnimationFrame(loop);
+        }
+
+        init();
+
+        function switchTab(id, el) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
             document.getElementById(id).classList.add('active');
             el.classList.add('active');
         }
