@@ -8,341 +8,232 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
     :root {
-        --bg: #030303;
-        --text-main: #ffffff;
-        --text-muted: #8a8a8a;
-        --accent: #9d4edd;
-        --card-bg: rgba(20, 20, 20, 0.6);
-        --border: rgba(255, 255, 255, 0.05);
+        --bg: #050505;
+        --text: #ededed;
+        --text-dim: #888;
+        --accent: #8b5cf6;
+        --accent-dim: rgba(139, 92, 246, 0.1);
+        --card-bg: rgba(255, 255, 255, 0.03);
+        --border: rgba(255, 255, 255, 0.08);
     }
 
     body {
         margin: 0;
-        padding: 0;
         background-color: var(--bg);
-        color: var(--text-main);
+        color: var(--text);
         font-family: 'Inter', sans-serif;
-        overflow-x: hidden;
         min-height: 100vh;
         display: flex;
-        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        overflow-x: hidden;
     }
 
-    canvas {
+    .background-glow {
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1;
+        background: radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.08), transparent 60%);
+        animation: pulseGlow 8s ease-in-out infinite alternate;
+    }
+
+    .noise {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
+        pointer-events: none;
         z-index: -1;
+        opacity: 0.03;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
     }
 
-    .main-wrapper {
+    .container {
         width: 100%;
-        max-width: 650px;
-        padding: 80px 20px;
-        z-index: 1;
+        max-width: 600px;
+        padding: 100px 24px;
         display: flex;
         flex-direction: column;
         align-items: center;
     }
 
     .avatar {
-        width: 120px;
-        height: 120px;
+        width: 100px;
+        height: 100px;
         border-radius: 50%;
+        margin-bottom: 24px;
+        box-shadow: 0 0 40px rgba(139, 92, 246, 0.2);
         object-fit: cover;
-        margin-bottom: 25px;
-        box-shadow: 0 0 30px rgba(157, 78, 221, 0.15);
-        border: 2px solid rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     h1 {
-        font-size: 2rem;
+        font-size: 1.8rem;
         font-weight: 600;
         margin: 0 0 40px 0;
-        letter-spacing: -0.5px;
+        letter-spacing: -0.02em;
     }
 
-    .nav {
+    nav {
         display: flex;
-        gap: 30px;
-        margin-bottom: 50px;
-        border-bottom: 1px solid var(--border);
-        padding-bottom: 15px;
+        gap: 24px;
+        margin-bottom: 60px;
         width: 100%;
         justify-content: center;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 16px;
     }
 
-    .nav-item {
-        color: var(--text-muted);
+    .nav-link {
+        color: var(--text-dim);
         cursor: pointer;
-        font-size: 0.95rem;
-        transition: 0.2s;
-        position: relative;
-        padding: 0 5px;
+        font-size: 0.9rem;
+        transition: color 0.2s;
+        padding: 4px 8px;
     }
 
-    .nav-item:hover, .nav-item.active {
-        color: var(--text-main);
+    .nav-link:hover, .nav-link.active {
+        color: var(--text);
     }
 
-    .nav-item.active::after {
-        content: '';
-        position: absolute;
-        bottom: -16px;
-        left: 0;
-        width: 100%;
-        height: 1px;
-        background: var(--accent);
-        box-shadow: 0 0 10px var(--accent);
-    }
-
-    .content {
-        width: 100%;
-    }
-
-    .tab-content {
+    .content-section {
         display: none;
-        animation: fadeEnter 0.4s ease forwards;
+        width: 100%;
+        animation: fadeIn 0.3s ease forwards;
     }
 
-    .tab-content.active {
+    .content-section.active {
         display: block;
     }
 
     p {
         line-height: 1.6;
-        color: #cccccc;
-        margin-bottom: 20px;
+        color: #a1a1a1;
         font-size: 1rem;
+        margin-bottom: 24px;
     }
 
-    .project-card {
+    .card {
         background: var(--card-bg);
         border: 1px solid var(--border);
+        padding: 24px;
         border-radius: 12px;
-        padding: 25px;
-        margin-bottom: 20px;
-        transition: transform 0.2s ease, border-color 0.2s ease;
-        backdrop-filter: blur(5px);
+        transition: transform 0.2s, border-color 0.2s;
     }
 
-    .project-card:hover {
-        transform: translateY(-3px);
-        border-color: rgba(157, 78, 221, 0.3);
+    .card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(139, 92, 246, 0.3);
     }
 
-    .project-header {
+    .card-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 10px;
+        margin-bottom: 12px;
     }
 
-    .project-title {
-        font-size: 1.1rem;
-        font-weight: 500;
+    .card-title {
         color: #fff;
+        font-weight: 500;
+        font-size: 1.1rem;
     }
 
-    .tech-stack {
+    .tag {
         font-size: 0.75rem;
+        background: var(--accent-dim);
         color: var(--accent);
-        background: rgba(157, 78, 221, 0.1);
         padding: 4px 8px;
-        border-radius: 4px;
+        border-radius: 6px;
         font-family: monospace;
     }
 
-    .discord-btn {
+    .btn-discord {
         display: inline-flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
         background: #5865F2;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 8px;
+        color: #fff;
         text-decoration: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 0.9rem;
         font-weight: 500;
-        margin-top: 20px;
-        transition: background 0.2s;
+        margin-top: 10px;
+        transition: opacity 0.2s;
     }
 
-    .discord-btn:hover {
-        background: #4752C4;
+    .btn-discord:hover {
+        opacity: 0.9;
     }
 
-    @keyframes fadeEnter {
-        from { opacity: 0; transform: translateY(10px); }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(5px); }
         to { opacity: 1; transform: translateY(0); }
     }
 
-    @media (max-width: 600px) {
-        .main-wrapper { padding: 40px 20px; }
-        h1 { font-size: 1.8rem; }
+    @keyframes pulseGlow {
+        0% { opacity: 0.6; transform: scale(1); }
+        100% { opacity: 1; transform: scale(1.1); }
     }
 </style>
 </head>
 <body>
 
-    <canvas id="bgCanvas"></canvas>
+    <div class="background-glow"></div>
+    <div class="noise"></div>
 
-    <div class="main-wrapper">
-        <img src="https://i.imgur.com/6Uo3OUo.gif" alt="Avatar" class="avatar">
+    <div class="container">
+        <img src="https://i.imgur.com/6Uo3OUo.gif" alt="Aleksandre" class="avatar">
         <h1>Aleksandre</h1>
 
-        <div class="nav">
-            <div class="nav-item active" onclick="changeTab('home', this)">Home</div>
-            <div class="nav-item" onclick="changeTab('work', this)">Projects</div>
-            <div class="nav-item" onclick="changeTab('contact', this)">Contact</div>
+        <nav>
+            <div class="nav-link active" onclick="switchTab('home', this)">Home</div>
+            <div class="nav-link" onclick="switchTab('work', this)">Projects</div>
+            <div class="nav-link" onclick="switchTab('contact', this)">Contact</div>
+        </nav>
+
+        <div id="home" class="content-section active">
+            <p>
+                I'm a developer who spends way too much time reverse engineering World of Warcraft.
+            </p>
+            <p>
+                I mostly work on memory editing and kernel drivers. I like figuring out how the game client works internally and building tools that stay invisible. My main goal is keeping things safe and simple—no bloat, just code that works and doesn't get you banned.
+            </p>
         </div>
 
-        <div class="content">
-            <div id="home" class="tab-content active">
-                <p>
-                    I focus on the technical side of World of Warcraft, primarily reverse engineering the client to understand how it ticks.
-                </p>
-                <p>
-                    Most of my work involves building custom execution environments and bypassing integrity checks to allow for automated logic that feels indistinguishable from human input. I prioritize stability and safety above all else.
+        <div id="work" class="content-section">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Blackhand</span>
+                    <span class="tag">Unlocker</span>
+                </div>
+                <p style="margin-bottom: 0;">
+                    This is my private unlocker. It's built with a custom kernel driver to handle read operations, making it extremely secure and virtually impossible to detect. It fully supports Midnight and is designed for stability.
                 </p>
             </div>
+        </div>
 
-            <div id="work" class="tab-content">
-                <div class="project-card">
-                    <div class="project-header">
-                        <span class="project-title">Lua Engine Bypass</span>
-                        <span class="tech-stack">C++ / ASM</span>
-                    </div>
-                    <p style="font-size: 0.95rem; margin-bottom: 0;">
-                        Methodology for executing protected Lua API calls during combat without triggering Warden scans or tainting the UI execution flow.
-                    </p>
-                </div>
-
-                <div class="project-card">
-                    <div class="project-header">
-                        <span class="project-title">Object Manager</span>
-                        <span class="tech-stack">Memory Reading</span>
-                    </div>
-                    <p style="font-size: 0.95rem; margin-bottom: 0;">
-                        High-performance external entity reader that maps local units, game objects, and dynamic structures in real-time with minimal overhead.
-                    </p>
-                </div>
-
-                <div class="project-card">
-                    <div class="project-header">
-                        <span class="project-title">Input Simulation Driver</span>
-                        <span class="tech-stack">Kernel / C</span>
-                    </div>
-                    <p style="font-size: 0.95rem; margin-bottom: 0;">
-                        Kernel-level mouse and keyboard simulation to ensure hardware inputs are replicated 1:1, bypassing standard anti-cheat heuristics.
-                    </p>
-                </div>
-            </div>
-
-            <div id="contact" class="tab-content">
-                <p>
-                    I'm usually active on Discord. Feel free to reach out if you have questions about the unlocker or technical inquiries.
-                </p>
-                <a href="https://discord.com/users/aleksandre_main" target="_blank" class="discord-btn">
-                    <i class="fab fa-discord"></i> aleksandre_main
-                </a>
-            </div>
+        <div id="contact" class="content-section">
+            <p>
+                If you want to talk about Blackhand or just ask some questions, hit me up on Discord.
+            </p>
+            <a href="https://discord.com/users/aleksandre_main" target="_blank" class="btn-discord">
+                <i class="fab fa-discord"></i> aleksandre_main
+            </a>
         </div>
     </div>
 
     <script>
-        const canvas = document.getElementById('bgCanvas');
-        const ctx = canvas.getContext('2d');
-        
-        let width = window.innerWidth;
-        let height = window.innerHeight;
-        canvas.width = width;
-        canvas.height = height;
-
-        const particles = [];
-        const particleCount = 100;
-
-        class Particle {
-            constructor() {
-                this.reset();
-            }
-
-            reset() {
-                this.x = Math.random() * width;
-                this.y = Math.random() * height;
-                this.vx = (Math.random() - 0.5) * 0.5;
-                this.vy = (Math.random() - 0.5) * 0.5;
-                this.size = Math.random() * 2;
-                this.alpha = Math.random() * 0.5 + 0.1;
-                this.targetAlpha = this.alpha;
-            }
-
-            update() {
-                this.x += this.vx;
-                this.y += this.vy;
-
-                if (this.x < 0 || this.x > width) this.vx *= -1;
-                if (this.y < 0 || this.y > height) this.vy *= -1;
-
-                this.alpha += (Math.random() - 0.5) * 0.02;
-                if (this.alpha < 0.1) this.alpha = 0.1;
-                if (this.alpha > 0.6) this.alpha = 0.6;
-            }
-
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(157, 78, 221, ${this.alpha})`;
-                ctx.fill();
-            }
-        }
-
-        for (let i = 0; i < particleCount; i++) {
-            particles.push(new Particle());
-        }
-
-        function animate() {
-            ctx.clearRect(0, 0, width, height);
+        function switchTab(id, el) {
+            const tabs = document.querySelectorAll('.content-section');
+            tabs.forEach(tab => tab.classList.remove('active'));
             
-            particles.forEach(p => {
-                p.update();
-                p.draw();
-            });
+            const links = document.querySelectorAll('.nav-link');
+            links.forEach(link => link.classList.remove('active'));
 
-            for (let i = 0; i < particles.length; i++) {
-                for (let j = i + 1; j < particles.length; j++) {
-                    const dx = particles[i].x - particles[j].x;
-                    const dy = particles[i].y - particles[j].y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-
-                    if (dist < 100) {
-                        ctx.beginPath();
-                        ctx.strokeStyle = `rgba(157, 78, 221, ${0.1 * (1 - dist / 100)})`;
-                        ctx.lineWidth = 0.5;
-                        ctx.moveTo(particles[i].x, particles[i].y);
-                        ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.stroke();
-                    }
-                }
-            }
-
-            requestAnimationFrame(animate);
-        }
-
-        animate();
-
-        window.addEventListener('resize', () => {
-            width = window.innerWidth;
-            height = window.innerHeight;
-            canvas.width = width;
-            canvas.height = height;
-        });
-
-        function changeTab(id, el) {
-            document.querySelectorAll('.tab-content').forEach(div => div.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            
             document.getElementById(id).classList.add('active');
             el.classList.add('active');
         }
