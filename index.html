@@ -4,110 +4,90 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Aleksandre</title>
-<!-- Google Fonts: Inter for clean text, JetBrains Mono for code elements -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
     :root {
-        --bg: #050505;
-        --text: #e1e1e1;
-        --text-dim: #888;
-        --accent: #a855f7; /* Modern purple */
-        --accent-glow: rgba(168, 85, 247, 0.15);
-        --card-bg: rgba(255, 255, 255, 0.03);
-        --border: rgba(255, 255, 255, 0.06);
-    }
-
-    * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
+        --bg: #030303;
+        --text-main: #ffffff;
+        --text-muted: #8a8a8a;
+        --accent: #9d4edd;
+        --card-bg: rgba(20, 20, 20, 0.6);
+        --border: rgba(255, 255, 255, 0.05);
     }
 
     body {
+        margin: 0;
+        padding: 0;
         background-color: var(--bg);
-        color: var(--text);
+        color: var(--text-main);
         font-family: 'Inter', sans-serif;
-        line-height: 1.6;
+        overflow-x: hidden;
         min-height: 100vh;
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        overflow-x: hidden;
+        justify-content: center;
     }
 
-    /* --- BACKGROUND EFFECT --- */
-    .bg-gradient {
+    canvas {
         position: fixed;
         top: 0;
         left: 0;
-        width: 100vw;
-        height: 100vh;
+        width: 100%;
+        height: 100%;
         z-index: -1;
-        background: 
-            radial-gradient(circle at 15% 50%, rgba(76, 29, 149, 0.08), transparent 25%), 
-            radial-gradient(circle at 85% 30%, rgba(168, 85, 247, 0.05), transparent 25%);
-        pointer-events: none;
     }
 
-    /* --- LAYOUT --- */
-    .container {
+    .main-wrapper {
         width: 100%;
-        max-width: 680px;
-        padding: 80px 24px;
+        max-width: 650px;
+        padding: 80px 20px;
+        z-index: 1;
         display: flex;
         flex-direction: column;
+        align-items: center;
     }
 
-    /* --- HEADER --- */
-    header {
-        margin-bottom: 50px;
+    .avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 25px;
+        box-shadow: 0 0 30px rgba(157, 78, 221, 0.15);
+        border: 2px solid rgba(255, 255, 255, 0.05);
     }
 
     h1 {
-        font-size: 3rem;
+        font-size: 2rem;
         font-weight: 600;
-        color: #fff;
-        letter-spacing: -1px;
-        margin-bottom: 10px;
+        margin: 0 0 40px 0;
+        letter-spacing: -0.5px;
     }
 
-    .status {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.85rem;
-        color: var(--accent);
-        background: var(--accent-glow);
-        padding: 4px 10px;
-        border-radius: 4px;
-        display: inline-block;
-    }
-
-    /* --- NAV --- */
-    nav {
+    .nav {
         display: flex;
         gap: 30px;
-        margin-bottom: 60px;
+        margin-bottom: 50px;
         border-bottom: 1px solid var(--border);
         padding-bottom: 15px;
+        width: 100%;
+        justify-content: center;
     }
 
-    .nav-link {
-        color: var(--text-dim);
+    .nav-item {
+        color: var(--text-muted);
         cursor: pointer;
         font-size: 0.95rem;
-        transition: color 0.2s ease;
+        transition: 0.2s;
         position: relative;
+        padding: 0 5px;
     }
 
-    .nav-link:hover {
-        color: #fff;
+    .nav-item:hover, .nav-item.active {
+        color: var(--text-main);
     }
 
-    .nav-link.active {
-        color: #fff;
-    }
-
-    .nav-link.active::after {
+    .nav-item.active::after {
         content: '';
         position: absolute;
         bottom: -16px;
@@ -115,72 +95,77 @@
         width: 100%;
         height: 1px;
         background: var(--accent);
+        box-shadow: 0 0 10px var(--accent);
     }
 
-    /* --- SECTIONS --- */
-    .content-area {
-        min-height: 300px;
+    .content {
+        width: 100%;
     }
 
-    .section {
+    .tab-content {
         display: none;
-        animation: fadeIn 0.4s ease forwards;
+        animation: fadeEnter 0.4s ease forwards;
     }
 
-    .section.active {
+    .tab-content.active {
         display: block;
     }
 
     p {
-        color: #b0b0b0;
-        margin-bottom: 24px;
-        font-size: 1.05rem;
+        line-height: 1.6;
+        color: #cccccc;
+        margin-bottom: 20px;
+        font-size: 1rem;
     }
 
-    /* --- CARDS (PROJECTS) --- */
-    .card {
+    .project-card {
         background: var(--card-bg);
         border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 24px;
+        border-radius: 12px;
+        padding: 25px;
         margin-bottom: 20px;
-        transition: transform 0.2s, border-color 0.2s;
+        transition: transform 0.2s ease, border-color 0.2s ease;
+        backdrop-filter: blur(5px);
     }
 
-    .card:hover {
-        border-color: rgba(168, 85, 247, 0.3);
-        transform: translateY(-2px);
+    .project-card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(157, 78, 221, 0.3);
     }
 
-    .card h3 {
+    .project-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .project-title {
         font-size: 1.1rem;
-        font-weight: 600;
-        margin-bottom: 8px;
+        font-weight: 500;
         color: #fff;
     }
 
-    .card-meta {
-        font-family: 'JetBrains Mono', monospace;
+    .tech-stack {
         font-size: 0.75rem;
-        color: var(--text-dim);
-        margin-top: 15px;
-        display: flex;
-        gap: 12px;
+        color: var(--accent);
+        background: rgba(157, 78, 221, 0.1);
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-family: monospace;
     }
 
-    /* --- SOCIAL BUTTON --- */
     .discord-btn {
         display: inline-flex;
         align-items: center;
         gap: 10px;
-        margin-top: 20px;
         background: #5865F2;
         color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
         text-decoration: none;
-        padding: 10px 20px;
-        border-radius: 6px;
         font-weight: 500;
-        font-size: 0.95rem;
+        margin-top: 20px;
         transition: background 0.2s;
     }
 
@@ -188,87 +173,77 @@
         background: #4752C4;
     }
 
-    @keyframes fadeIn {
+    @keyframes fadeEnter {
         from { opacity: 0; transform: translateY(10px); }
         to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Mobile tweak */
     @media (max-width: 600px) {
-        h1 { font-size: 2.2rem; }
-        .container { padding: 40px 20px; }
+        .main-wrapper { padding: 40px 20px; }
+        h1 { font-size: 1.8rem; }
     }
 </style>
 </head>
 <body>
 
-    <div class="bg-gradient"></div>
+    <canvas id="bgCanvas"></canvas>
 
-    <div class="container">
-        <header>
-            <h1>Aleksandre</h1>
-            <span class="status">./developer</span>
-        </header>
+    <div class="main-wrapper">
+        <img src="https://i.imgur.com/6Uo3OUo.gif" alt="Avatar" class="avatar">
+        <h1>Aleksandre</h1>
 
-        <nav>
-            <div class="nav-link active" onclick="switchTab('home')">Home</div>
-            <div class="nav-link" onclick="switchTab('projects')">Work</div>
-            <div class="nav-link" onclick="switchTab('contact')">Contact</div>
-        </nav>
+        <div class="nav">
+            <div class="nav-item active" onclick="changeTab('home', this)">Home</div>
+            <div class="nav-item" onclick="changeTab('work', this)">Projects</div>
+            <div class="nav-item" onclick="changeTab('contact', this)">Contact</div>
+        </div>
 
-        <div class="content-area">
-            <!-- HOME SECTION -->
-            <div id="home" class="section active">
+        <div class="content">
+            <div id="home" class="tab-content active">
                 <p>
-                    I write software that interacts with games. Mostly focused on <strong>World of Warcraft</strong> client internals and memory management.
+                    I focus on the technical side of World of Warcraft, primarily reverse engineering the client to understand how it ticks.
                 </p>
                 <p>
-                    I'm interested in how engines handle unit states and finding ways to run custom logic where it usually isn't allowed. I try to keep things lightweight and stable.
+                    Most of my work involves building custom execution environments and bypassing integrity checks to allow for automated logic that feels indistinguishable from human input. I prioritize stability and safety above all else.
                 </p>
             </div>
 
-            <!-- WORK SECTION -->
-            <div id="projects" class="section">
-                <div class="card">
-                    <h3>Lua Environment & Unlocking</h3>
-                    <p>
-                        A look into how the game restricts protected functions during combat. My research focuses on executing logic securely without triggering Warden integrity checks.
-                    </p>
-                    <div class="card-meta">
-                        <span>C++</span>
-                        <span>Reverse Engineering</span>
+            <div id="work" class="tab-content">
+                <div class="project-card">
+                    <div class="project-header">
+                        <span class="project-title">Lua Engine Bypass</span>
+                        <span class="tech-stack">C++ / ASM</span>
                     </div>
+                    <p style="font-size: 0.95rem; margin-bottom: 0;">
+                        Methodology for executing protected Lua API calls during combat without triggering Warden scans or tainting the UI execution flow.
+                    </p>
                 </div>
 
-                <div class="card">
-                    <h3>Object Manager Iteration</h3>
-                    <p>
-                        Building an efficient external reader to track player coordinates and casting states in real-time. Optimizing for speed to ensure the unlocker feels native.
-                    </p>
-                    <div class="card-meta">
-                        <span>Memory Reading</span>
-                        <span>Performance</span>
+                <div class="project-card">
+                    <div class="project-header">
+                        <span class="project-title">Object Manager</span>
+                        <span class="tech-stack">Memory Reading</span>
                     </div>
+                    <p style="font-size: 0.95rem; margin-bottom: 0;">
+                        High-performance external entity reader that maps local units, game objects, and dynamic structures in real-time with minimal overhead.
+                    </p>
                 </div>
 
-                <div class="card">
-                    <h3>Input Simulation</h3>
-                    <p>
-                        Developing drivers to simulate mouse and keyboard events that look human to the server.
-                    </p>
-                    <div class="card-meta">
-                        <span>Drivers</span>
-                        <span>C</span>
+                <div class="project-card">
+                    <div class="project-header">
+                        <span class="project-title">Input Simulation Driver</span>
+                        <span class="tech-stack">Kernel / C</span>
                     </div>
+                    <p style="font-size: 0.95rem; margin-bottom: 0;">
+                        Kernel-level mouse and keyboard simulation to ensure hardware inputs are replicated 1:1, bypassing standard anti-cheat heuristics.
+                    </p>
                 </div>
             </div>
 
-            <!-- CONTACT SECTION -->
-            <div id="contact" class="section">
+            <div id="contact" class="tab-content">
                 <p>
-                    The best way to reach me is through Discord. I'm usually available for questions regarding the unlocker or general dev talk.
+                    I'm usually active on Discord. Feel free to reach out if you have questions about the unlocker or technical inquiries.
                 </p>
-                
                 <a href="https://discord.com/users/aleksandre_main" target="_blank" class="discord-btn">
                     <i class="fab fa-discord"></i> aleksandre_main
                 </a>
@@ -277,20 +252,99 @@
     </div>
 
     <script>
-        function switchTab(tabId) {
-            // Update Nav Styles
-            document.querySelectorAll('.nav-link').forEach(el => {
-                el.classList.remove('active');
-                if (el.innerText.toLowerCase() === tabId || 
-                   (tabId === 'projects' && el.innerText === 'Work') ||
-                   (tabId === 'contact' && el.innerText === 'Contact')) {
-                    el.classList.add('active');
-                }
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+
+        const particles = [];
+        const particleCount = 100;
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.size = Math.random() * 2;
+                this.alpha = Math.random() * 0.5 + 0.1;
+                this.targetAlpha = this.alpha;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+
+                this.alpha += (Math.random() - 0.5) * 0.02;
+                if (this.alpha < 0.1) this.alpha = 0.1;
+                if (this.alpha > 0.6) this.alpha = 0.6;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(157, 78, 221, ${this.alpha})`;
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            particles.forEach(p => {
+                p.update();
+                p.draw();
             });
 
-            // Update Content
-            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < 100) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(157, 78, 221, ${0.1 * (1 - dist / 100)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        window.addEventListener('resize', () => {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        });
+
+        function changeTab(id, el) {
+            document.querySelectorAll('.tab-content').forEach(div => div.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            
+            document.getElementById(id).classList.add('active');
+            el.classList.add('active');
         }
     </script>
 </body>
